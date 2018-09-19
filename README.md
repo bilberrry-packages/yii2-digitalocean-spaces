@@ -118,7 +118,7 @@ $storage = Yii::$app->get('storage');
 
 /** @var \frostealth\yii2\aws\s3\commands\GetCommand $command */
 $command = $storage->create(GetCommand::class);
-$command->inBucket('my-another-bucket')->byFilename('filename.ext')->saveAs('/path/to/local/file.ext');
+$command->inSpace('my-another-space')->byFilename('filename.ext')->saveAs('/path/to/local/file.ext');
 
 /** @var \Aws\ResultInterface $result */
 $result = $storage->execute($command);
@@ -139,8 +139,8 @@ If the command doesn't implement the `PlainCommand` interface, it must have its 
 Every handler must extend the `Handler` class or implement the `Handler` interface.
 Handlers gets the `S3Client` instance into its constructor.
 
-The implementation of the `HasBucket` and `HasAcl` interfaces allows the command builder to set the values
-of bucket and acl by default.
+The implementation of the `HasSpace` and `HasAcl` interfaces allows the command builder to set the values
+of space and acl by default.
 
 To make the plain commands asynchronously, you have to implement the `Asynchronous` interface.
 Also, you can use the `Async` trait to implement this interface.
@@ -152,26 +152,26 @@ Consider the following command:
 
 namespace app\components\s3\commands;
 
-use frostealth\yii2\aws\s3\base\commands\traits\Options;
-use frostealth\yii2\aws\s3\interfaces\commands\Command;
-use frostealth\yii2\aws\s3\interfaces\commands\HasBucket;
+use bilberrry\spaces\base\commands\traits\Options;
+use bilberrry\spaces\interfaces\commands\Command;
+use bilberrry\spaces\interfaces\commands\HasSpace;
 
-class MyCommand implements Command, HasBucket
+class MyCommand implements Command, HasSpace
 {
     use Options;
 
-    protected $bucket;
+    protected $space;
 
     protected $something;
 
-    public function getBucket()
+    public function getSpace()
     {
-        return $this->bucket;
+        return $this->space;
     }
 
-    public function inBucket(string $bucket)
+    public function inSpace(string $space)
     {
-        $this->bucket = $bucket;
+        $this->space = $space;
 
         return $this;
     }
@@ -205,7 +205,7 @@ class MyCommandHandler extends Handler
     public function handle(MyCommand $command)
     {
         return $this->s3Client->someAction(
-            $command->getBucket(),
+            $command->getSpace(),
             $command->getSomething(),
             $command->getOptions()
         );
@@ -234,21 +234,21 @@ Custom plain command looks like this:
 
 namespace app\components\s3\commands;
 
-use frostealth\yii2\aws\s3\interfaces\commands\HasBucket;
-use frostealth\yii2\aws\s3\interfaces\commands\PlainCommand;
+use bilberrry\spaces\interfaces\commands\HasSpace;
+use bilberrry\spaces\interfaces\commands\PlainCommand;
 
-class MyPlainCommand implements PlainCommand, HasBucket
+class MyPlainCommand implements PlainCommand, HasSpace
 {
     protected $args = [];
 
-    public function getBucket()
+    public function getSpace()
     {
         return $this->args['Bucket'] ?? '';
     }
 
-    public function inBucket(string $bucket)
+    public function inSpace(string $space)
     {
-        $this->args['Bucket'] = $bucket;
+        $this->args['Bucket'] = $space;
 
         return $this;
     }
@@ -267,7 +267,7 @@ class MyPlainCommand implements PlainCommand, HasBucket
 
     public function getName(): string
     {
-        return 'AwsS3CommandName';
+        return 'SpaceCommandName';
     }
 
     public function toArgs(): array
