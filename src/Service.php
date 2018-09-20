@@ -36,7 +36,7 @@ class Service extends Component implements ServiceInterface
     public $defaultAcl = '';
 
     /** @var array S3Client config */
-    protected $clientConfig = [];
+    protected $clientConfig = ['version' => '2006-03-01'];
 
     /** @var array */
     private $components = [];
