@@ -10,7 +10,7 @@
     },
     "require": {
         "php": ">=7.0.0",
-        "aws/aws-sdk-php": "^3.198.2",
+        "aws/aws-sdk-php": "~3.67",
         "yiisoft/yii2": "~2.0"
     },
     "autoload": {
