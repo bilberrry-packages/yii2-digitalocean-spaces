@@ -4,7 +4,7 @@ namespace bilberrry\spaces\handlers;
 
 use bilberrry\spaces\commands\UploadCommand;
 use bilberrry\spaces\base\handlers\Handler;
-use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7\Utils as GuzzleHttpUtils;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -45,9 +45,9 @@ final class UploadCommandHandler extends Handler
     protected function sourceToStream($source): StreamInterface
     {
         if (is_string($source)) {
-            $source = Psr7\try_fopen($source, 'r+');
+            $source = GuzzleHttpUtils::tryFopen($source, 'r+');
         }
 
-        return Psr7\stream_for($source);
+        return GuzzleHttpUtils::streamFor($source);
     }
 }
